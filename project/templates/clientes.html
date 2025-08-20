@@ -1,0 +1,119 @@
+{% extends "base.html" %}
+
+{% block title %}Clientes - CLINED SPA{% endblock %}
+
+{% block content %}
+<div class="row mb-4">
+    <div class="col-md-6">
+        <h1 class="display-6 mb-3">
+            <i class="fas fa-users me-3"></i>Clientes
+        </h1>
+    </div>
+    <div class="col-md-6 text-end">
+        <a href="{{ url_for('novo_cliente') }}" class="btn btn-primary">
+            <i class="fas fa-user-plus me-2"></i>Novo Cliente
+        </a>
+    </div>
+</div>
+
+<!-- Barra de Pesquisa -->
+<div class="row mb-4">
+    <div class="col-12">
+        <div class="card">
+            <div class="card-body">
+                <form method="GET" class="row g-3">
+                    <div class="col-md-8">
+                        <input type="text" class="form-control" name="search" 
+                               placeholder="Pesquisar por nome ou telefone..." 
+                               value="{{ search }}">
+                    </div>
+                    <div class="col-md-2">
+                        <button type="submit" class="btn btn-primary w-100">
+                            <i class="fas fa-search me-2"></i>Pesquisar
+                        </button>
+                    </div>
+                    <div class="col-md-2">
+                        <a href="{{ url_for('clientes') }}" class="btn btn-secondary w-100">
+                            <i class="fas fa-times me-2"></i>Limpar
+                        </a>
+                    </div>
+                </form>
+            </div>
+        </div>
+    </div>
+</div>
+
+<div class="card">
+    <div class="card-header">
+        <h5 class="card-title mb-0">
+            <i class="fas fa-list me-2"></i>Lista de Clientes
+            {% if search %}
+                <small class="text-muted">({{ clientes|length }} resultado(s) para "{{ search }}")</small>
+            {% endif %}
+        </h5>
+    </div>
+    <div class="card-body">
+        {% if clientes %}
+            <div class="table-responsive">
+                <table class="table table-hover">
+                    <thead>
+                        <tr>
+                            <th>Nome</th>
+                            <th>Telefone</th>
+                            <th>Email</th>
+                            <th>Data Nascimento</th>
+                            <th>Cadastro</th>
+                            <th>Ações</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        {% for cliente in clientes %}
+                        <tr>
+                            <td>
+                                <i class="fas fa-user me-2 text-primary"></i>
+                                <strong>{{ cliente.nome }}</strong>
+                            </td>
+                            <td>
+                                <i class="fas fa-phone me-2 text-success"></i>
+                                {{ cliente.telefone }}
+                            </td>
+                            <td>
+                                <i class="fas fa-envelope me-2 text-info"></i>
+                                {{ cliente.email }}
+                            </td>
+                            <td>
+                                {% if cliente.data_nascimento %}
+                                    <i class="fas fa-birthday-cake me-2 text-warning"></i>
+                                    {{ cliente.data_nascimento.strftime('%d/%m/%Y') }}
+                                {% else %}
+                                    <span class="text-muted">-</span>
+                                {% endif %}
+                            </td>
+                            <td>
+                                <i class="fas fa-calendar me-2 text-secondary"></i>
+                                {{ cliente.data_cadastro.strftime('%d/%m/%Y') }}
+                            </td>
+                            <td>
+                                <a href="{{ url_for('editar_cliente', id=cliente.id) }}" 
+                                   class="btn btn-sm btn-outline-primary">
+                                    <i class="fas fa-edit"></i>
+                                </a>
+                            </td>
+                        </tr>
+                        {% endfor %}
+                    </tbody>
+                </table>
+            </div>
+        {% else %}
+            <div class="text-center text-muted py-5">
+                <i class="fas fa-user-friends fa-4x mb-3"></i>
+                <h4>Nenhum cliente cadastrado</h4>
+                <p>Comece cadastrando seu primeiro cliente!</p>
+                <a href="{{ url_for('novo_cliente') }}" class="btn btn-primary">
+                    <i class="fas fa-user-plus me-2"></i>Cadastrar Primeiro Cliente
+                </a>
+            </div>
+        {% endif %}
+    </div>
+</div>
+{% endblock %}

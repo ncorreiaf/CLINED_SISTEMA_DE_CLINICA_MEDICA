@@ -1,0 +1,202 @@
+{% extends "base.html" %}
+
+{% block title %}Relatórios - CLINED SPA{% endblock %}
+
+{% block content %}
+<div class="row mb-4">
+    <div class="col-12">
+        <h1 class="display-6 mb-3">
+            <i class="fas fa-chart-bar me-3"></i>Relatórios
+            <small class="text-muted">Gerar relatórios em PDF</small>
+        </h1>
+    </div>
+</div>
+
+<div class="row justify-content-center">
+    <div class="col-md-8">
+        <div class="card">
+            <div class="card-header">
+                <h5 class="card-title mb-0">
+                    <i class="fas fa-file-pdf me-2"></i>Gerar Relatório PDF
+                </h5>
+            </div>
+            <div class="card-body">
+                <form id="relatorioForm" method="GET" action="{{ url_for('gerar_relatorio_pdf') }}">
+                    <div class="mb-4">
+                        <label class="form-label">
+                            <i class="fas fa-calendar me-2"></i>Período do Relatório
+                        </label>
+                        <div class="row">
+                            <div class="col-md-3">
+                                <div class="form-check">
+                                    <input class="form-check-input" type="radio" name="periodo" 
+                                           id="periodo_dia" value="dia" checked onchange="toggleDatas()">
+                                    <label class="form-check-label" for="periodo_dia">
+                                        Dia
+                                    </label>
+                                </div>
+                            </div>
+                            <div class="col-md-3">
+                                <div class="form-check">
+                                    <input class="form-check-input" type="radio" name="periodo" 
+                                           id="periodo_semana" value="semana" onchange="toggleDatas()">
+                                    <label class="form-check-label" for="periodo_semana">
+                                        Semana
+                                    </label>
+                                </div>
+                            </div>
+                            <div class="col-md-3">
+                                <div class="form-check">
+                                    <input class="form-check-input" type="radio" name="periodo" 
+                                           id="periodo_mes" value="mes" onchange="toggleDatas()">
+                                    <label class="form-check-label" for="periodo_mes">
+                                        Mês
+                                    </label>
+                                </div>
+                            </div>
+                            <div class="col-md-3">
+                                <div class="form-check">
+                                    <input class="form-check-input" type="radio" name="periodo" 
+                                           id="periodo_personalizado" value="personalizado" onchange="toggleDatas()">
+                                    <label class="form-check-label" for="periodo_personalizado">
+                                        Personalizado
+                                    </label>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                    
+                    <div class="row" id="datasContainer">
+                        <div class="col-md-6">
+                            <div class="mb-3">
+                                <label for="data_inicio" class="form-label">
+                                    <i class="fas fa-calendar-alt me-2"></i>Data de Início
+                                </label>
+                                <input type="date" class="form-control" id="data_inicio" name="data_inicio">
+                                <small class="form-text text-muted" id="dataInicioHelp">
+                                    Para dia: selecione a data específica (opcional - padrão: hoje)
+                                </small>
+                            </div>
+                        </div>
+                        
+                        <div class="col-md-6" id="dataFimContainer" style="display: none;">
+                            <div class="mb-3">
+                                <label for="data_fim" class="form-label">
+                                    <i class="fas fa-calendar-alt me-2"></i>Data de Fim
+                                </label>
+                                <input type="date" class="form-control" id="data_fim" name="data_fim">
+                                <small class="form-text text-muted">
+                                    Selecione a data final do período
+                                </small>
+                            </div>
+                        </div>
+                    </div>
+                    
+                    <div class="alert alert-info">
+                        <i class="fas fa-info-circle me-2"></i>
+                        <strong>Informações do Relatório:</strong>
+                        <ul class="mb-0 mt-2">
+                            <li>Total de agendamentos no período</li>
+                            <li>Agendamentos concluídos e cancelados</li>
+                            <li>Receita total do período</li>
+                            <li>Detalhes de todos os agendamentos</li>
+                        </ul>
+                    </div>
+                    
+                    <div class="d-grid">
+                        <button type="submit" class="btn btn-primary btn-lg">
+                            <i class="fas fa-download me-2"></i>Gerar e Baixar Relatório PDF
+                        </button>
+                    </div>
+                </form>
+            </div>
+        </div>
+    </div>
+</div>
+
+<!-- Exemplos de Relatórios Rápidos -->
+<div class="row mt-4">
+    <div class="col-12">
+        <div class="card">
+            <div class="card-header">
+                <h5 class="card-title mb-0">
+                    <i class="fas fa-bolt me-2"></i>Relatórios Rápidos
+                </h5>
+            </div>
+            <div class="card-body">
+                <div class="row">
+                    <div class="col-md-3 mb-2">
+                        <a href="{{ url_for('gerar_relatorio_pdf', periodo='dia', data_inicio=hoje.strftime('%Y-%m-%d')) }}" 
+                           class="btn btn-outline-primary w-100">
+                            <i class="fas fa-calendar-day me-2"></i>Hoje
+                        </a>
+                    </div>
+                    <div class="col-md-3 mb-2">
+                        <a href="{{ url_for('gerar_relatorio_pdf', periodo='semana') }}" 
+                           class="btn btn-outline-success w-100">
+                            <i class="fas fa-calendar-week me-2"></i>Esta Semana
+                        </a>
+                    </div>
+                    <div class="col-md-3 mb-2">
+                        <a href="{{ url_for('gerar_relatorio_pdf', periodo='mes') }}" 
+                           class="btn btn-outline-info w-100">
+                            <i class="fas fa-calendar me-2"></i>Este Mês
+                        </a>
+                    </div>
+                    <div class="col-md-3 mb-2">
+                        <a href="{{ url_for('gerar_relatorio_pdf', periodo='dia', data_inicio=ontem.strftime('%Y-%m-%d')) }}" 
+                           class="btn btn-outline-warning w-100">
+                            <i class="fas fa-calendar-minus me-2"></i>Ontem
+                        </a>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %}
+
+{% block scripts %}
+<script>
+function toggleDatas() {
+    const periodo = document.querySelector('input[name="periodo"]:checked').value;
+    const dataFimContainer = document.getElementById('dataFimContainer');
+    const dataInicioHelp = document.getElementById('dataInicioHelp');
+    const dataInicio = document.getElementById('data_inicio');
+    const dataFim = document.getElementById('data_fim');
+    
+    // Reset required attributes
+    dataInicio.required = false;
+    dataFim.required = false;
+    
+    switch(periodo) {
+        case 'dia':
+            dataFimContainer.style.display = 'none';
+            dataInicioHelp.textContent = 'Para dia: selecione a data específica (opcional - padrão: hoje)';
+            break;
+            
+        case 'semana':
+            dataFimContainer.style.display = 'none';
+            dataInicioHelp.textContent = 'Para semana: selecione o início da semana (opcional - padrão: esta semana)';
+            break;
+            
+        case 'mes':
+            dataFimContainer.style.display = 'none';
+            dataInicioHelp.textContent = 'Para mês: selecione qualquer dia do mês (opcional - padrão: este mês)';
+            break;
+            
+        case 'personalizado':
+            dataFimContainer.style.display = 'block';
+            dataInicioHelp.textContent = 'Selecione a data de início do período';
+            dataInicio.required = true;
+            dataFim.required = true;
+            break;
+    }
+}
+
+// Inicializar
+document.addEventListener('DOMContentLoaded', function() {
+    toggleDatas();
+});
+</script>
+{% endblock %}

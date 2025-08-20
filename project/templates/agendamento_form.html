@@ -1,0 +1,149 @@
+{% extends "base.html" %}
+
+{% block title %}Novo Agendamento - CLINED SPA{% endblock %}
+
+{% block content %}
+<div class="row mb-4">
+    <div class="col-12">
+        <h1 class="display-6 mb-3">
+            <i class="fas fa-calendar-plus me-3"></i>Novo Agendamento
+        </h1>
+    </div>
+</div>
+
+<div class="row justify-content-center">
+    <div class="col-md-8">
+        <div class="card">
+            <div class="card-header">
+                <h5 class="card-title mb-0">
+                    <i class="fas fa-calendar-check me-2"></i>Criar novo agendamento
+                </h5>
+            </div>
+            <div class="card-body">
+                <form method="POST">
+                    <div class="row">
+                        <div class="col-md-6">
+                            <div class="mb-3">
+                                <label for="cliente_id" class="form-label">
+                                    <i class="fas fa-user me-2"></i>Cliente *
+                                </label>
+                                <div class="mb-2">
+                                    <input type="text" class="form-control form-control-sm" 
+                                           placeholder="Pesquisar cliente por nome ou telefone..." 
+                                           onkeyup="filtrarClientes(this.value)">
+                                </div>
+                                <select class="form-control" id="cliente_id" name="cliente_id" required>
+                                    <option value="">Selecione um cliente</option>
+                                    {% for cliente in clientes %}
+                                        <option value="{{ cliente.id }}" data-nome="{{ cliente.nome.lower() }}" data-telefone="{{ cliente.telefone }}">
+                                            {{ cliente.nome }} - {{ cliente.telefone }}
+                                        </option>
+                                    {% endfor %}
+                                </select>
+                            </div>
+                        </div>
+                        
+                        <div class="col-md-6">
+                            <div class="mb-3">
+                                <label for="servico_id" class="form-label">
+                                    <i class="fas fa-concierge-bell me-2"></i>Serviço *
+                                </label>
+                                <select class="form-control" id="servico_id" name="servico_id" required>
+                                    <option value="">Selecione um serviço</option>
+                                    {% for servico in servicos %}
+                                        <option value="{{ servico.id }}" data-preco="{{ servico.preco }}">
+                                            {{ servico.nome }} - R$ {{ "%.2f"|format(servico.preco) }} ({{ servico.duracao }}min)
+                                        </option>
+                                    {% endfor %}
+                                </select>
+                            </div>
+                        </div>
+                    </div>
+                    
+                    <div class="mb-3">
+                        <label for="data_hora" class="form-label">
+                            <i class="fas fa-calendar-alt me-2"></i>Data e Hora *
+                        </label>
+                        <input type="datetime-local" class="form-control" id="data_hora" name="data_hora" required>
+                    </div>
+                    
+                    <div class="mb-4">
+                        <label for="observacoes" class="form-label">
+                            <i class="fas fa-sticky-note me-2"></i>Observações
+                        </label>
+                        <textarea class="form-control" id="observacoes" name="observacoes" rows="3" 
+                                  placeholder="Observações especiais para este agendamento"></textarea>
+                    </div>
+                    
+                    <div class="d-flex justify-content-between">
+                        <a href="{{ url_for('agendamentos') }}" class="btn btn-secondary">
+                            <i class="fas fa-arrow-left me-2"></i>Voltar
+                        </a>
+                        <button type="submit" class="btn btn-primary">
+                            <i class="fas fa-save me-2"></i>Criar Agendamento
+                        </button>
+                    </div>
+                </form>
+            </div>
+        </div>
+    </div>
+</div>
+
+{% if not clientes %}
+<div class="row mt-4">
+    <div class="col-12">
+        <div class="alert alert-warning">
+            <i class="fas fa-exclamation-triangle me-2"></i>
+            <strong>Atenção:</strong> Você precisa cadastrar pelo menos um cliente antes de criar agendamentos.
+            <a href="{{ url_for('novo_cliente') }}" class="btn btn-sm btn-primary ms-2">
+                Cadastrar Cliente
+            </a>
+        </div>
+    </div>
+</div>
+{% endif %}
+
+{% if not servicos %}
+<div class="row mt-4">
+    <div class="col-12">
+        <div class="alert alert-warning">
+            <i class="fas fa-exclamation-triangle me-2"></i>
+            <strong>Atenção:</strong> Você precisa cadastrar pelo menos um serviço antes de criar agendamentos.
+            <a href="{{ url_for('novo_servico') }}" class="btn btn-sm btn-primary ms-2">
+                Cadastrar Serviço
+            </a>
+        </div>
+    </div>
+</div>
+{% endif %}
+{% endblock %}
+
+{% block scripts %}
+<script>
+// Define data mínima como hoje
+document.addEventListener('DOMContentLoaded', function() {
+    const dataHoraInput = document.getElementById('data_hora');
+    const now = new Date();
+    now.setMinutes(now.getMinutes() - now.getTimezoneOffset());
+    dataHoraInput.min = now.toISOString().slice(0, 16);
+});
+
+// Função para filtrar clientes
+function filtrarClientes(searchTerm) {
+    const select = document.getElementById('cliente_id');
+    const options = select.getElementsByTagName('option');
+    
+    for (let i = 1; i < options.length; i++) { // Pula a primeira opção (placeholder)
+        const option = options[i];
+        const nome = option.getAttribute('data-nome') || '';
+        const telefone = option.getAttribute('data-telefone') || '';
+        
+        if (nome.includes(searchTerm.toLowerCase()) || telefone.includes(searchTerm)) {
+            option.style.display = '';
+        } else {
+            option.style.display = 'none';
+        }
+    }
+}
+</script>
+{% endblock %}

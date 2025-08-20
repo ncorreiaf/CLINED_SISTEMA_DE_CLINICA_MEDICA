@@ -1,0 +1,151 @@
+{% extends "base.html" %}
+
+{% block title %}Dashboard - CLINED SPA{% endblock %}
+
+{% block content %}
+<div class="row mb-4">
+    <div class="col-12">
+        <h1 class="display-6 mb-3">
+            <i class="fas fa-tachometer-alt me-3"></i>Dashboard
+            <small class="text-muted">Visão Geral do SPA</small>
+        </h1>
+    </div>
+</div>
+
+<!-- Estatísticas -->
+<div class="row mb-4">
+    <div class="col-md-3 col-sm-6">
+        <div class="stats-card">
+            <div class="stats-number">{{ total_clientes }}</div>
+            <div class="stats-label">
+                <i class="fas fa-users me-1"></i>Total de Clientes
+            </div>
+        </div>
+    </div>
+    
+    <div class="col-md-3 col-sm-6">
+        <div class="stats-card">
+            <div class="stats-number">{{ total_servicos }}</div>
+            <div class="stats-label">
+                <i class="fas fa-concierge-bell me-1"></i>Serviços Ativos
+            </div>
+        </div>
+    </div>
+    
+    <div class="col-md-3 col-sm-6">
+        <div class="stats-card">
+            <div class="stats-number">{{ agendamentos_hoje }}</div>
+            <div class="stats-label">
+                <i class="fas fa-calendar-day me-1"></i>Agendamentos Hoje
+            </div>
+        </div>
+    </div>
+    
+    <div class="col-md-3 col-sm-6">
+        <div class="stats-card">
+            <div class="stats-number">R$ {{ "%.2f"|format(receita_mes) }}</div>
+            <div class="stats-label">
+                <i class="fas fa-dollar-sign me-1"></i>Receita do Mês
+            </div>
+        </div>
+    </div>
+</div>
+
+<!-- Ações Rápidas -->
+<div class="row mb-4">
+    <div class="col-12">
+        <div class="card">
+            <div class="card-header">
+                <h5 class="card-title mb-0">
+                    <i class="fas fa-bolt me-2"></i>Ações Rápidas
+                </h5>
+            </div>
+            <div class="card-body">
+                <div class="row">
+                    <div class="col-md-3 col-sm-6 mb-2">
+                        <a href="{{ url_for('novo_cliente') }}" class="btn btn-primary w-100">
+                            <i class="fas fa-user-plus me-2"></i>Novo Cliente
+                        </a>
+                    </div>
+                    <div class="col-md-3 col-sm-6 mb-2">
+                        <a href="{{ url_for('novo_agendamento') }}" class="btn btn-success w-100">
+                            <i class="fas fa-calendar-plus me-2"></i>Novo Agendamento
+                        </a>
+                    </div>
+                    <div class="col-md-3 col-sm-6 mb-2">
+                        <a href="{{ url_for('novo_servico') }}" class="btn btn-info w-100">
+                            <i class="fas fa-plus me-2"></i>Novo Serviço
+                        </a>
+                    </div>
+                    <div class="col-md-3 col-sm-6 mb-2">
+                        <a href="{{ url_for('clientes') }}" class="btn btn-outline-primary w-100">
+                            <i class="fas fa-list me-2"></i>Ver Todos
+                        </a>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+<!-- Próximos Agendamentos -->
+<div class="row">
+    <div class="col-12">
+        <div class="card">
+            <div class="card-header">
+                <h5 class="card-title mb-0">
+                    <i class="fas fa-calendar-check me-2"></i>Próximos Agendamentos
+                </h5>
+            </div>
+            <div class="card-body">
+                {% if proximos_agendamentos %}
+                    <div class="table-responsive">
+                        <table class="table table-hover">
+                            <thead>
+                                <tr>
+                                    <th>Data/Hora</th>
+                                    <th>Cliente</th>
+                                    <th>Serviço</th>
+                                    <th>Valor</th>
+                                    <th>Status</th>
+                                </tr>
+                            </thead>
+                            <tbody>
+                                {% for agendamento in proximos_agendamentos %}
+                                <tr>
+                                    <td>
+                                        <i class="fas fa-clock me-2"></i>
+                                        {{ agendamento.data_hora.strftime('%d/%m/%Y %H:%M') }}
+                                    </td>
+                                    <td>
+                                        <i class="fas fa-user me-2"></i>
+                                        {{ agendamento.cliente.nome }}
+                                    </td>
+                                    <td>{{ agendamento.servico.nome }}</td>
+                                    <td>
+                                        <strong>R$ {{ "%.2f"|format(agendamento.valor) }}</strong>
+                                    </td>
+                                    <td>
+                                        <span class="status-badge status-{{ agendamento.status }}">
+                                            {{ agendamento.status.title() }}
+                                        </span>
+                                    </td>
+                                </tr>
+                                {% endfor %}
+                            </tbody>
+                        </table>
+                    </div>
+                {% else %}
+                    <div class="text-center text-muted py-4">
+                        <i class="fas fa-calendar-times fa-3x mb-3"></i>
+                        <p>Nenhum agendamento próximo encontrado.</p>
+                        <a href="{{ url_for('novo_agendamento') }}" class="btn btn-primary">
+                            Criar Primeiro Agendamento
+                        </a>
+                    </div>
+                {% endif %}
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %}

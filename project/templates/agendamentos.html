@@ -1,0 +1,88 @@
+{% extends "base.html" %}
+
+{% block title %}Agendamentos - CLINED SPA{% endblock %}
+
+{% block content %}
+<div class="row mb-4">
+    <div class="col-md-6">
+        <h1 class="display-6 mb-3">
+            <i class="fas fa-calendar-alt me-3"></i>Agendamentos
+        </h1>
+    </div>
+    <div class="col-md-6 text-end">
+        <a href="{{ url_for('novo_agendamento') }}" class="btn btn-primary">
+            <i class="fas fa-calendar-plus me-2"></i>Novo Agendamento
+        </a>
+    </div>
+</div>
+
+<div class="card">
+    <div class="card-header">
+        <h5 class="card-title mb-0">
+            <i class="fas fa-list me-2"></i>Lista de Agendamentos
+        </h5>
+    </div>
+    <div class="card-body">
+        {% if agendamentos %}
+            <div class="table-responsive">
+                <table class="table table-hover">
+                    <thead>
+                        <tr>
+                            <th>Data/Hora</th>
+                            <th>Cliente</th>
+                            <th>Serviço</th>
+                            <th>Valor</th>
+                            <th>Status</th>
+                            <th>Ações</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        {% for agendamento in agendamentos %}
+                        <tr>
+                            <td>
+                                <i class="fas fa-clock me-2"></i>
+                                {{ agendamento.data_hora.strftime('%d/%m/%Y %H:%M') }}
+                            </td>
+                            <td>
+                                <i class="fas fa-user me-2 text-primary"></i>
+                                {{ agendamento.cliente.nome }}
+                            </td>
+                            <td>{{ agendamento.servico.nome }}</td>
+                            <td>
+                                <strong>R$ {{ "%.2f"|format(agendamento.valor) }}</strong>
+                            </td>
+                            <td>
+                                <span class="status-badge status-{{ agendamento.status }}">
+                                    {{ agendamento.status.title() }}
+                                </span>
+                            </td>
+                            <td>
+                                {% if agendamento.status == 'agendado' %}
+                                    <a href="{{ url_for('atualizar_status_agendamento', id=agendamento.id, status='concluido') }}" 
+                                       class="btn btn-sm btn-success me-1" title="Marcar como concluído">
+                                        <i class="fas fa-check"></i>
+                                    </a>
+                                    <a href="{{ url_for('atualizar_status_agendamento', id=agendamento.id, status='cancelado') }}" 
+                                       class="btn btn-sm btn-danger" title="Cancelar">
+                                        <i class="fas fa-times"></i>
+                                    </a>
+                                {% endif %}
+                            </td>
+                        </tr>
+                        {% endfor %}
+                    </tbody>
+                </table>
+            </div>
+        {% else %}
+            <div class="text-center text-muted py-5">
+                <i class="fas fa-calendar-times fa-4x mb-3"></i>
+                <h4>Nenhum agendamento encontrado</h4>
+                <p>Comece criando seu primeiro agendamento!</p>
+                <a href="{{ url_for('novo_agendamento') }}" class="btn btn-primary">
+                    <i class="fas fa-calendar-plus me-2"></i>Criar Primeiro Agendamento
+                </a>
+            </div>
+        {% endif %}
+    </div>
+</div>
+{% endblock %}
